@@ -9,10 +9,15 @@ jobs:
     parallelism: 4
     steps:
       - checkout
-      - run: sudo apt install -y libsqlite3-dev zlib1g-dev
-      - run: sudo apt install -y postgresql-client
-      - run: sudo docker-php-ext-install zip
-      - run: sudo docker-php-ext-install pdo_pgsql && sudo docker-php-ext-enable pdo_pgsql
+      - run:
+          name: Install PostgreSQL client tools
+          command: |
+            sudo apt-get update && sudo apt-get install postgresql-client
+      - run:
+          name: Install and enable pdo_pgsql php extension
+          command: |
+            sudo apt-get update && sudo apt-get install libpq-dev
+            sudo docker-php-ext-install pdo_pgsql && sudo docker-php-ext-enable pdo_pgsql
       - run: sudo composer self-update
       - restore_cache:
           keys:
@@ -33,10 +38,10 @@ jobs:
       - run:
           name: Postgres database
           command: |
-            sudo -u root psql -h 127.0.0.1 -U postgres -c "create database api_starter_test"
-            sudo -u root psql -h 127.0.0.1 -U postgres -c "create user homestead password 'secret'"
-            sudo -u root psql -h 127.0.0.1 -U postgres -c "grant all on database api_starter_test to homestead"
-            sudo -u root psql -h 127.0.0.1 -U postgres api_starter_test -c "create extension citext
+            sudo -u root psql -h 127.0.0.1 -U postgres -c "create database homestead"
+                        sudo -u root psql -h 127.0.0.1 -U postgres -c "create user homestead password 'secret'"
+                        sudo -u root psql -h 127.0.0.1 -U postgres -c "grant all on database homestead to homestead"
+                        sudo -u root psql -h 127.0.0.1 -U postgres homestead -c "create extension citext"
       - run: php artisan jwt:secret
       - run: php artisan migrate
       #- run: php artisan passport:install
