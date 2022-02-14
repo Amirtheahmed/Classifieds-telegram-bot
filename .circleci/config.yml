@@ -40,13 +40,13 @@ jobs:
       - run: php artisan jwt:secret
       - run: php artisan migrate
       #- run: php artisan passport:install
-      - run:
-          name: Run Lumen Server
-          command: php -S localhost:8080 -t ./public
-          background: true
-      - run: # loop, sleep 0.1 second and check ip 8080 every loop
-          name: waiting for server to be responsive (for e2e)
-          command: dockerize -wait http://localhost:8080 -timeout 1m
+      #- run:
+      #    name: Run Laravel Server
+      #    command: php -S localhost:8080 -t ./public
+      #    background: true
+      #- run: # loop, sleep 0.1 second and check ip 8080 every loop
+      #    name: waiting for server to be responsive (for e2e)
+      #    command: dockerize -wait http://localhost:8080 -timeout 1m
       - run: vendor/bin/phpunit
   deploy:
     machine:
