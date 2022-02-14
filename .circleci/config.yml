@@ -1,0 +1,78 @@
+version: 2
+jobs:
+  develop:
+    docker:
+      - image: circleci/php:8-node-browsers-legacy
+      - image: postgres:9.6
+        environment:
+          - POSTGRES_USER=postgres
+    parallelism: 4
+    steps:
+      - checkout
+      - run: sudo apt install -y libsqlite3-dev zlib1g-dev
+      - run: sudo apt install -y postgresql-client
+      - run: sudo docker-php-ext-install zip
+      - run: sudo docker-php-ext-install pdo_pgsql && sudo docker-php-ext-enable pdo_pgsql
+      - run: sudo composer self-update
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "composer.lock" }}
+            # fallback to using the latest cache if no exact match is found
+            - composer-v2-
+      - run:
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
+      - run: mv .env.testing .env
+      - run: composer install -n --ignore-platform-reqs
+      - save_cache: # special step to save the dependency cache
+          key: dependency-cache-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+      - run:
+          name: Postgres database
+          command: |
+            sudo -u root psql -h 127.0.0.1 -U postgres -c "create database api_starter_test"
+            sudo -u root psql -h 127.0.0.1 -U postgres -c "create user homestead password 'secret'"
+            sudo -u root psql -h 127.0.0.1 -U postgres -c "grant all on database api_starter_test to homestead"
+            sudo -u root psql -h 127.0.0.1 -U postgres api_starter_test -c "create extension citext
+      - run: php artisan jwt:secret
+      - run: php artisan migrate
+      #- run: php artisan passport:install
+      - run:
+          name: Run Lumen Server
+          command: php -S localhost:8080 -t ./public
+          background: true
+      - run: # loop, sleep 0.1 second and check ip 8080 every loop
+          name: waiting for server to be responsive (for e2e)
+          command: dockerize -wait http://localhost:8080 -timeout 1m
+      - run: vendor/bin/phpunit
+    #    - run:
+    #       name: Start Chrome Driver
+    #       command: ./vendor/laravel/dusk/bin/chromedriver-linux
+    #       background: true
+    #    - run:
+    #       name: Run Laravel Dusk Tests
+    #       command: php artisan dusk
+  deploy:
+    machine:
+      enabled: true
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "cd:d3:1a:99:8b:d8:35:e3:3c:be:6d:74:1a:91:f0:b3"
+      - run:
+          name: Deploy via SSH to Beta
+          command: ssh -vvv -t ciuser@3.126.6.231 -p5536 "cd staging/api && git reset --hard && git pull && cd ../ && sh api-build.sh"
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - develop
+      - deploy:
+          requires:
+            - develop
+          filters:
+            branches:
+              only: develop
