@@ -48,23 +48,16 @@ jobs:
           name: waiting for server to be responsive (for e2e)
           command: dockerize -wait http://localhost:8080 -timeout 1m
       - run: vendor/bin/phpunit
-    #    - run:
-    #       name: Start Chrome Driver
-    #       command: ./vendor/laravel/dusk/bin/chromedriver-linux
-    #       background: true
-    #    - run:
-    #       name: Run Laravel Dusk Tests
-    #       command: php artisan dusk
   deploy:
     machine:
       enabled: true
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "cd:d3:1a:99:8b:d8:35:e3:3c:be:6d:74:1a:91:f0:b3"
+            - ""
       - run:
           name: Deploy via SSH to Beta
-          command: ssh -vvv -t ciuser@3.126.6.231 -p5536 "cd staging/api && git reset --hard && git pull && cd ../ && sh api-build.sh"
+          #command: ssh -vvv -t ciuser@xxxxx -pxxx "cd staging/api && git reset --hard && git pull && cd ../ && sh api-build.sh"
 workflows:
   version: 2
   build_test_deploy:
