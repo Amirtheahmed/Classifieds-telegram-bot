@@ -23,11 +23,15 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install and enable pdo_pgsql php extension
+          name: get ready for postgres
           command: |
-            sudo apt-get update && apt-get -y install git unzip zlib1g-dev libpq-dev
-            sudo docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
-            sudo docker-php-ext-install pdo pdo_pgsql zip
+            sudo apt-get update
+            sudo apt-get install libpq-dev
+            sudo docker-php-ext-install pdo_pgsql
+            dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: php test
+          command: vendor/bin/phpunit
       # Download and cache dependencies
       - restore_cache:
           keys:
