@@ -57,10 +57,6 @@ jobs:
           command:
             php artisan migrate --env=testing
 
-      - run:
-          name: "Generate Passport encryption keys"
-          command: php artisan passport:install
-
       # run tests with phpunit
       - run:
           name: "Run Tests"
