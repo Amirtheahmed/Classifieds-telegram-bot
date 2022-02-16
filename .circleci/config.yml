@@ -76,10 +76,10 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - develop
+      - build
       - deploy:
           requires:
-            - develop
+            - build
           filters:
             branches:
-              only: develop
+              only: build
