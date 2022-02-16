@@ -1,0 +1,84 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # Specify the version you desire here
+      - image: cimg/php:8.0-browsers
+      # Service container image available at `host: localhost`
+      - image: cimg/postgres:14.0
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+        environment:
+          POSTGRES_DB: api_testing
+          POSTGRES_USER: api_testing
+          POSTGRES_PASSWORD: api_testing
+      - image: redis:6.0.16-alpine
+    steps:
+      - checkout
+      - run:
+          name: "Prepare Environment"
+          command: |
+            sudo apt update
+            sudo apt install -y postgresql-client
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            # "composer.lock" can be used if it is committed to the repo
+            - v1-dependencies-{{ checksum "composer.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          name: "Install Dependencies"
+          command: composer install -n --prefer-dist
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "composer.json" }}
+          paths:
+            - ./vendor
+
+      # prepare the database
+      - run:
+          name: "Create Environment file and generate app key"
+          command: |
+            mv .env.ci .env
+            php artisan key:generate
+
+      - run:
+          name: "Create database and run migration"
+          command:
+            php artisan migrate --env=testing
+
+      # run tests with phpunit
+      - run:
+          name: "Run Tests"
+          command: ./vendor/bin/phpunit
+  deploy:
+    machine:
+      image: circleci/classic:edge
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "85:2d:c3:6a:55:e9:76:84:6e:fe:a7:9e:2c:17:58:70"
+      - run:
+          name: Deploy via SSH to Beta
+          command: ssh -vvv -t ec2-user@18.207.50.39 "cd app/master && git reset --hard && git pull && cd ../ && sh build-prod.sh"
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
