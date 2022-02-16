@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # Specify the version you desire here
-      - image: circleci/php:7.4-node-browsers
+      - image: cimg/php:8.1.2
       # Service container image available at `host: localhost`
       - image: cimg/postgres:14.0
         auth:
