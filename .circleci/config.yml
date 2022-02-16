@@ -18,10 +18,8 @@ jobs:
           POSTGRES_USER: api_testing
           POSTGRES_PASSWORD: api_testing
       - image: redis:6.0.16-alpine
-
     steps:
       - checkout
-
       - run:
           name: "Prepare Environment"
           command: |
@@ -63,8 +61,9 @@ jobs:
           command: ./vendor/bin/phpunit
   deploy:
     machine:
-      enabled: true
+      image: circleci/classic:edge
     steps:
+      - checkout
       - add_ssh_keys:
           fingerprints:
             - "85:2d:c3:6a:55:e9:76:84:6e:fe:a7:9e:2c:17:58:70"
@@ -82,4 +81,4 @@ workflows:
             - build
           filters:
             branches:
-              only: build
+              only: develop
