@@ -9,7 +9,7 @@ COPY . /var/www
 RUN composer install $COMPOSER_FLAGS \
     && mv php.ini /usr/local/etc/php/php.ini \
     && mv www.conf /usr/local/etc/php-fpm.d/www.conf \
-    && chown -R 0:www-data /var/www \
+    && chown -R 101:www-data /var/www \
     && find /var/www -type f -exec chmod 664 {} \; \
     && find /var/www -type d -exec chmod 775 {} \; \
     && chgrp -R www-data storage bootstrap/cache \
