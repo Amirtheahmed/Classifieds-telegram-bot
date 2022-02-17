@@ -2,13 +2,13 @@ version: '3.6'
 services:
   nginx:
     image: nginx:1.17-alpine
-    container_name: develop-nginx
+    container_name: dev-nginx
     restart: always
     volumes:
       - ./public:/var/www/public
       - ./nginx.develop.conf:/etc/nginx/nginx.conf
     ports:
-      - 8000:8000
+      - 80:80
     depends_on:
       - app
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
@@ -19,10 +19,10 @@ services:
       args:
         - COMPOSER_FLAGS=--prefer-dist --optimize-autoloader
     command: /usr/local/sbin/php-fpm
-    container_name: develop-app
+    container_name: dev-app
     restart: always
     ports:
-      - 9001:9001
+      - 9000:9000
     environment:
       - OPCACHE_SAVE_COMMENTS=1
       - OPCACHE_VALIDATE_TIMESTAMPS=1
@@ -36,7 +36,7 @@ services:
 
   schedule:
     image: ibrunotome/php:7.4
-    container_name: develop-schedule
+    container_name: dev-schedule
     restart: always
     command:
       - /bin/bash
@@ -56,7 +56,7 @@ services:
 
   queue:
     image: ibrunotome/php:7.4
-    container_name: develop-queue
+    container_name: dev-queue
     restart: always
     command: php artisan horizon
     environment:
@@ -71,10 +71,10 @@ services:
 
   redis:
     image: redis:5.0.5-alpine
-    container_name: develop-redis
+    container_name: dev-redis
     restart: always
     ports:
-      - 6378:6378
+      - 6379:6379
     volumes:
       - redis-data:/data
 

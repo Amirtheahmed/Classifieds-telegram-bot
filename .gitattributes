@@ -3,4 +3,4 @@
 *.scss linguist-vendored
 *.js linguist-vendored
 CHANGELOG.md export-ignore
-.circleci/config.yml merge=dev
+.circleci/config.yml merge=prod
