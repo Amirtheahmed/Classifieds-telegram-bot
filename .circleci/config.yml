@@ -66,10 +66,10 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "85:2d:c3:6a:55:e9:76:84:6e:fe:a7:9e:2c:17:58:70"
+            - "19:c8:4b:3b:14:21:da:ca:74:8e:23:08:11:57:1d:7f"
       - run:
-          name: Deploy via SSH to Beta
-          command: ssh -vvv -t ec2-user@18.207.50.39 "cd app/master && git reset --hard && git pull && cd ../ && sh build-prod.sh"
+          name: Deploy via SSH to Prod
+          command: ssh -vvv -t ec2-user@34.202.179.253 "cd app && git reset --hard && git pull && cd ../ && sh build-prod.sh"
 
 workflows:
   version: 2

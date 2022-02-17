@@ -74,7 +74,7 @@ services:
     container_name: prod-redis
     restart: always
     ports:
-      - 6389:6389
+      - 6379:6379
     volumes:
       - redis-data:/data
 
