@@ -8,7 +8,7 @@ services:
       - ./public:/var/www/public
       - ./nginx.develop.conf:/etc/nginx/nginx.conf
     ports:
-      - 80:80
+      - 8000:8000
     depends_on:
       - app
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
@@ -22,7 +22,7 @@ services:
     container_name: develop-app
     restart: always
     ports:
-      - 9000:9000
+      - 9001:9001
     environment:
       - OPCACHE_SAVE_COMMENTS=1
       - OPCACHE_VALIDATE_TIMESTAMPS=1
@@ -74,7 +74,7 @@ services:
     container_name: develop-redis
     restart: always
     ports:
-      - 6379:6379
+      - 6378:6378
     volumes:
       - redis-data:/data
 

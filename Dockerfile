@@ -18,3 +18,4 @@ RUN composer install $COMPOSER_FLAGS \
 CMD ["/usr/local/sbin/php-fpm"]
 
 EXPOSE 9000
+EXPOSE 9001
