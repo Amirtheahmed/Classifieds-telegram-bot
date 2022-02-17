@@ -69,7 +69,7 @@ jobs:
             - "85:2d:c3:6a:55:e9:76:84:6e:fe:a7:9e:2c:17:58:70"
       - run:
           name: Deploy via SSH to Beta
-          command: ssh -vvv -t ec2-user@18.207.50.39 "cd app/develop && git reset --hard && git pull && cd ../ && sh build-develop.sh"
+          command: ssh -vvv -t ec2-user@18.207.50.39 "cd app && git reset --hard && git pull && cd ../ && sh build-develop.sh"
 
 workflows:
   version: 2
