@@ -4,7 +4,8 @@ ARG COMPOSER_FLAGS
 
 WORKDIR /var/www
 
-COPY . /var/www
+COPY --chown=www-data:www-data . /var/www
+
 
 RUN composer install $COMPOSER_FLAGS \
     && mv php.ini /usr/local/etc/php/php.ini \
@@ -14,6 +15,10 @@ RUN composer install $COMPOSER_FLAGS \
     && find /var/www -type d -exec chmod 775 {} \; \
     && chgrp -R www-data storage bootstrap/cache \
     && chmod -R ug+rwx storage bootstrap/cache
+
+RUN usermod -u 1000 www-data
+
+USER www-data
 
 CMD ["/usr/local/sbin/php-fpm"]
 

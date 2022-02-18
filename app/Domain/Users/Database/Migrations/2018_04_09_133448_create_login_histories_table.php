@@ -24,7 +24,7 @@ class CreateLoginHistoriesTable extends Migration
             $table->string('city', 30)->nullable();
             $table->string('region_code', 7)->nullable();
             $table->string('region_name', 30)->nullable();
-            $table->string('country_code', 5)->nullable();
+            $table->string('country_code', 7)->nullable();
             $table->string('country_name', 30)->nullable();
             $table->string('continent_code', 7)->nullable();
             $table->string('continent_name', 7)->nullable();
