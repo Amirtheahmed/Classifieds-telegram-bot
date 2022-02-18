@@ -22,12 +22,12 @@ class CreateLoginHistoriesTable extends Migration
             $table->string('browser_version', 30)->nullable();
             $table->string('ip', 39)->nullable();
             $table->string('city', 30)->nullable();
-            $table->string('region_code', 5)->nullable();
+            $table->string('region_code', 7)->nullable();
             $table->string('region_name', 30)->nullable();
             $table->string('country_code', 5)->nullable();
             $table->string('country_name', 30)->nullable();
-            $table->string('continent_code', 5)->nullable();
-            $table->string('continent_name', 5)->nullable();
+            $table->string('continent_code', 7)->nullable();
+            $table->string('continent_name', 7)->nullable();
             $table->string('latitude', 20)->nullable();
             $table->string('longitude', 20)->nullable();
             $table->string('zipcode', 20)->nullable();
