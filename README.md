@@ -1,1 +1,1 @@
-## Laravel based telegram bot developed for classified ads using modulat api design priciples. (WIP and Archived)
+## Laravel based telegram bot developed for classified ads using modular api design principles. (WIP and Archived)
